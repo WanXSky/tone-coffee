@@ -1,0 +1,57 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+docker-compose.yml
+docker/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules
+vendor
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Laravel cache & storage
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+
+# Ignore generated files but keep folders
+storage/framework/cache/.gitignore
+storage/framework/sessions/.gitignore
+storage/framework/views/.gitignore
+
+# Tests
+tests
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+public/hot
+public/storage
+
+# Kubernetes / Infra local files
+*.pem
+*.key
+*.crt
+kubeconfig*
