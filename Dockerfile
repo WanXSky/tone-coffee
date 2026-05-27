@@ -42,6 +42,7 @@ WORKDIR /app
 # Install PHP extensions
 RUN install-php-extensions \
     pdo_mysql \
+    pcntl \
     mbstring \
     intl \
     zip \
