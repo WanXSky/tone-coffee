@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tone-coffee-config
+
+data:
+  APP_NAME: T.One Coffee
+  APP_ENV: production
+  APP_DEBUG: "false"
+
+  APP_URL: https://twentyone.web.id
+
+  LOG_CHANNEL: stack
+  LOG_LEVEL: info
+
+  DB_CONNECTION: mysql
+  DB_HOST: mysql
+  DB_PORT: "3306"
+  DB_DATABASE: tone_coffee
+  DB_USERNAME: tonecoffee
+
+  CACHE_DRIVER: file
+  SESSION_DRIVER: file
+  QUEUE_CONNECTION: database
