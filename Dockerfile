@@ -1,22 +1,26 @@
-# ========================================
+# =========================================
 # Stage 1 — Composer Dependencies
-# ========================================
+# =========================================
 FROM composer:2 AS vendor
 
 WORKDIR /app
 
-COPY . .
+COPY composer.json composer.lock ./
 
 RUN composer install \
     --no-dev \
     --prefer-dist \
     --no-interaction \
-    --optimize-autoloader
+    --no-scripts
 
-# ========================================
-# Stage 2 — Vite Frontend Build
-# ========================================
-FROM node:20-alpine AS frontend
+COPY . .
+
+RUN composer dump-autoload --optimize
+
+# =========================================
+# Stage 2 — Frontend Build
+# =========================================
+FROM node:20 AS frontend
 
 WORKDIR /app
 
@@ -28,57 +32,34 @@ COPY . .
 
 RUN npm run build
 
-# ========================================
-# Stage 3 — Production Runtime
-# ========================================
-FROM php:8.3-fpm-alpine
+# =========================================
+# Stage 3 — Runtime
+# =========================================
+FROM dunglas/frankenphp:latest
 
-WORKDIR /var/www
-
-# Install runtime packages
-RUN apk add --no-cache \
-    libzip \
-    icu \
-    oniguruma \
-    fcgi
+WORKDIR /app
 
 # Install PHP extensions
-RUN apk add --no-cache --virtual .build-deps \
-    $PHPIZE_DEPS \
-    icu-dev \
-    libzip-dev \
-    oniguruma-dev \
-    && docker-php-ext-install \
-        pdo \
-        pdo_mysql \
-        mbstring \
-        intl \
-        zip \
-        bcmath \
-        opcache \
-    && apk del .build-deps
+RUN install-php-extensions \
+    pdo_mysql \
+    mbstring \
+    intl \
+    zip \
+    bcmath \
+    opcache
 
 # Copy application
 COPY . .
 
-# Copy composer vendor
+# Copy vendor
 COPY --from=vendor /app/vendor ./vendor
 
 # Copy built frontend assets
 COPY --from=frontend /app/public/build ./public/build
 
-# Laravel cache optimization
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
-
 # Permissions
-RUN chown -R www-data:www-data \
-    storage \
-    bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-USER www-data
+EXPOSE 8000
 
-EXPOSE 9000
-
-CMD ["php-fpm"]
+CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000"]
