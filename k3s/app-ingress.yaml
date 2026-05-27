@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tone-coffee
+
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
+
+spec:
+  ingressClassName: nginx
+
+  tls:
+    - hosts:
+        - twentyone.web.id
+
+      secretName: tone-coffee-tls
+
+  rules:
+    - host: twentyone.web.id
+
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+
+            backend:
+              service:
+                name: tone-coffee
+
+                port:
+                  number: 80
