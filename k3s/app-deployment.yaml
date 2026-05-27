@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tone-coffee
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: tone-coffee
+
+  template:
+    metadata:
+      labels:
+        app: tone-coffee
+
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/username/tone-coffee:latest
+
+          ports:
+            - containerPort: 9000
+
+          envFrom:
+            - configMapRef:
+                name: tone-coffee-config
+
+            - secretRef:
+                name: tone-coffee-secret
