@@ -16,12 +16,18 @@ spec:
         app: tone-coffee
 
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+
       containers:
         - name: app
-          image: ghcr.io/username/tone-coffee:latest
+
+          image: ghcr.io/wanxsky/tone-coffee:latest
+
+          imagePullPolicy: Always
 
           ports:
-            - containerPort: 9000
+            - containerPort: 8000
 
           envFrom:
             - configMapRef:
@@ -29,3 +35,28 @@ spec:
 
             - secretRef:
                 name: tone-coffee-secret
+
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+
+            initialDelaySeconds: 15
+            periodSeconds: 20
