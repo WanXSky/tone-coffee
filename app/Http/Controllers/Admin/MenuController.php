@@ -91,7 +91,7 @@ class MenuController extends Controller
             'name'         => 'required|string|max:100',
             'description'  => 'nullable|string|max:500',
             'price'        => 'required|numeric|min:0',
-            'image'        => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'is_available' => 'boolean',
             'stock'        => 'required|integer|min:0',
         ]);
