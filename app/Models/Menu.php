@@ -60,10 +60,18 @@ class Menu extends Model
 
     // Helper: URL gambar
     public function getImageUrlAttribute(): string
-    {
-        if ($this->image) {
+{
+    if ($this->image) {
+
+        // Kalau Cloudinary / URL external
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
             return $this->image;
         }
-        return asset('images/default-menu.png');
+
+        // Kalau image local lama
+        return asset('storage/' . $this->image);
     }
+
+    return asset('images/default-menu.png');
+}
 }
