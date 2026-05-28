@@ -23,7 +23,7 @@ spec:
       containers:
         - name: app
 
-          image: ghcr.io/wanxsky/tone-coffee:5d2d728
+          image: ghcr.io/wanxsky/tone-coffee:dc8aad4
           imagePullPolicy: Always
 
           ports:
