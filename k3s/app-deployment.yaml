@@ -5,7 +5,7 @@ metadata:
   namespace: default
 
 spec:
-  replicas: 2
+  replicas: 1
 
   selector:
     matchLabels:
@@ -23,7 +23,7 @@ spec:
       containers:
         - name: app
 
-          image: ghcr.io/wanxsky/tone-coffee:7cb40e4
+          image: ghcr.io/wanxsky/tone-coffee:5d2d728
           imagePullPolicy: Always
 
           ports:
