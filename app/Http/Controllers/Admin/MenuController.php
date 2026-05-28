@@ -3,16 +3,16 @@
 // ============================================================
 // FILE: app/Http/Controllers/Admin/MenuController.php
 // ============================================================
- 
+
 namespace App\Http\Controllers\Admin;
- 
+
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Cloudinary\Cloudinary;
- 
+
 class MenuController extends Controller
 {
     public function index(Request $request)
@@ -22,18 +22,18 @@ class MenuController extends Controller
             ->when($request->category, fn($q, $c) => $q->where('category_id', $c))
             ->latest()
             ->paginate(15);
- 
+
         $categories = Category::all();
- 
+
         return view('admin.menu.index', compact('menus', 'categories'));
     }
- 
+
     public function create()
     {
         $categories = Category::where('is_active', true)->get();
         return view('admin.menu.create', compact('categories'));
     }
- 
+
     public function store(Request $request)
     {
         $request->validate([
@@ -45,26 +45,45 @@ class MenuController extends Controller
             'is_available'=> 'boolean',
             'stock'       => 'required|integer|min:0',
         ]);
- 
+
         $data         = $request->except('image');
         $data['slug'] = Str::slug($request->name) . '-' . uniqid();
- 
+
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('menus', 'public');
+
+        $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key'    => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
+                'url' => [
+                    'secure' => true,
+                ],
+            ]);
+
+            $uploadedFile = $cloudinary->uploadApi()->upload(
+                $request->file('image')->getRealPath(),
+                [
+                    'folder' => 'menus'
+                ]
+            );
+
+            $data['image'] = $uploadedFile['secure_url'];
         }
- 
+
         Menu::create($data);
- 
+
         return redirect()->route('admin.menus.index')
             ->with('success', 'Menu berhasil ditambahkan!');
     }
- 
+
     public function edit(Menu $menu)
     {
         $categories = Category::where('is_active', true)->get();
         return view('admin.menu.edit', compact('menu', 'categories'));
     }
- 
+
     public function update(Request $request, Menu $menu)
     {
         $request->validate([
@@ -76,31 +95,50 @@ class MenuController extends Controller
             'is_available' => 'boolean',
             'stock'        => 'required|integer|min:0',
         ]);
- 
+
         $data = $request->except('image');
- 
+
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('menus', 'public');
+
+            $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                    'api_key'    => env('CLOUDINARY_API_KEY'),
+                    'api_secret' => env('CLOUDINARY_API_SECRET'),
+                ],
+                'url' => [
+                    'secure' => true,
+                ],
+            ]);
+
+            $uploadedFile = $cloudinary->uploadApi()->upload(
+                $request->file('image')->getRealPath(),
+                [
+                    'folder' => 'menus'
+                ]
+            );
+
+            $data['image'] = $uploadedFile['secure_url'];
         }
- 
+
         $menu->update($data);
- 
+
         return redirect()->route('admin.menus.index')
             ->with('success', 'Menu berhasil diperbarui!');
     }
- 
+
     public function destroy(Menu $menu)
     {
         $menu->update(['is_available' => false]);
- 
+
         return redirect()->route('admin.menus.index')
             ->with('success', 'Menu berhasil dinonaktifkan.');
     }
- 
+
     public function toggleAvailable(Menu $menu)
     {
         $menu->update(['is_available' => !$menu->is_available]);
- 
+
         return response()->json([
             'success'      => true,
             'is_available' => $menu->is_available,
