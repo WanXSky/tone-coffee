@@ -58,8 +58,8 @@ Route::prefix('admin')
  
         // Menu management
         Route::get('/menus/toggle/{menu}', [AdminMenuController::class, 'toggleAvailable'])->name('menus.toggle');
-        Route::resource('menus', AdminMenuController::class);
- 
+        Route::resource('menus', AdminMenuController::class)->except(['show']);
+        
         // Order management
         Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
         Route::patch('/orders/{order}/courier', [AdminOrderController::class, 'assignCourier'])->name('orders.courier');
@@ -67,7 +67,7 @@ Route::prefix('admin')
  
         // Courier management
         Route::get('/couriers/{courier}/toggle', [AdminCourierController::class, 'toggleStatus'])->name('couriers.toggle');
-        Route::resource('couriers', AdminCourierController::class);
+        Route::resource('couriers', AdminCourierController::class)->except(['show']);
  
         // Payment management
         Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
