@@ -9,6 +9,15 @@
     </a>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        @if ($errors->any())
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4">
+        <ul class="list-disc pl-5">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
         <form action="{{ route('admin.menus.update', $menu) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
