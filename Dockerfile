@@ -49,6 +49,8 @@ RUN install-php-extensions \
     bcmath \
     opcache
 
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 # Copy application
 COPY . .
 
